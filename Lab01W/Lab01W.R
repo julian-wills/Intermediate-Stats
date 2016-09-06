@@ -5,6 +5,11 @@
 
 # Install Packages and Initialize Functions --------------------------------------------------------
 
+# Run these lines of code to load and install packages. We won't be using these today but it is good
+#  practice. 
+require(dplyr) || {install.packages("dplyr"); require(dplyr)}
+require(ggplot2) || {install.packages("ggplot2"); require(ggplot2)}
+require(tidyr) || {install.packages("tidyr"); require(tidyr)}
 
 # From: http://stackoverflow.com/questions/2547402/is-there-a-built-in-function-for-finding-the-mode
 mode <- function(x) {
@@ -20,42 +25,39 @@ mode <- function(x) {
 # You can now collapse all the information in this section by clicking the tiny arrow right next to line 13. 
 
 # If you don't know a function, you can look it up by typing '?' in front. 
-?mean
-?sum
+?sample
+?mean 
 ?cat
 
 
 # Calculator --------------------------------------------------------------
 
-# At the most basic level, R is a calculator. E.g. you can always add/subtract/multiply numbers
-#  or directly into the console. 
+# You can always use R as a calculator. E.g. adding/subtract/multiply numbers. This can be done
+#  through the editor or directly through the console. 
 1 + 1   # = 2
 11.5 / 0   # = Inf
 
-magrittr::add(1, 1)
-magrittr::divide_by(11.5, 0)
-add(1, 1)
-
 # Vectors and Random Samples ----------------------------------------------
 
-# Let's create a vector of integers from 1 to 5
-c(1, 2, 3, 4, 5)   #manual approach
-c(1:5)  #shortcut using sequence operator
+# Let's create a vector of integers from 1 to 5. We can do this by using the c() function to 
+#  "concatenate" a set of "values" into a single "vector"
+c(1, 2, 3, 4, 5)   # manual approach
+c(1:5)  # shortcut using sequence operator ':'
 
 # Now let's generate a random sample of numbers from a uniform distribution
-set.seed(09072016)
-sample(10:50,10,TRUE) #prints to console, but doesn't save it
-sample1 <- sample(10:50,10,TRUE) #assign the output to a new variable
+set.seed(09072016)  # This resets the random number generator for reproducibility
+sample(10:50,10,TRUE)  # prints to console, but doesn't save it
+sample1 <- sample(10:50,10,TRUE)  # assign the output to a new variable
 
 
 # Descriptive Statistics --------------------------------------------------
 
 # Mean
-mean1a <- mean(sample1)
-mean1b <- (16 + 16 + 20 + 20 + 33 + 25 + 41 + 15 + 23 + 43) / 10
-all.equal(mean1a, mean1b)
+mean1a <- mean(sample1)  # You can always check your work by using the built in function
+mean1b <- (16 + 16 + 20 + 20 + 33 + 25 + 41 + 15 + 23 + 43) / 10  # But always show your work by hand
+all.equal(mean1a, mean1b)  # This compares these two vectors and says 'TRUE' if they are equivalent
 
-cat("\n Mean of sample1 is: ", mean1b)
+cat("\n Mean of sample1 is: ", mean1b)  # This prints out to console. The '\n' means insert 'new line'
 
 # Median
 median1a <- median(sample1)
@@ -109,11 +111,6 @@ popVar1b <-
 all.equal(popVar1a, popVar1b)
 cat("\n Population variance of sample1 is: ", popVar1b)
 
-# Histogram
-hist(sample1)   #Base R
-ggplot(tbl_df(sample1), aes(x = value)) + geom_histogram(bins=6)
-
-
 # Stem and leaf -----------------------------------------------------------
 stem(sample1) #This is one way to check your work.
 
@@ -132,5 +129,15 @@ ecdf(sample1)(19)
 1 - ecdf(sample1)(19) 
 
 
-# ---
+# Misc: Importing and writing data --------------------------------------------------
+
+# Let's now create a file where we can store our sample
+write.table(sample1, file="Lab01W_sample1.txt", col.names=F, row.names=F)
+
+# Now that we have saved this vector in a file we can import it into a new object. 
+sample1_import <- scan(file="Lab01W_sample1.txt")
+
+# We use 'scan' for vectors but more often we will use write.csv and read.csv when we have multiple vectors
+#  in the format of a table. R calls this type of object a 'dataframe' which we will explore more in the
+#  next section. 
 
