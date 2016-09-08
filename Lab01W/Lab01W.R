@@ -1,6 +1,6 @@
-# Author: Julian Wills
-# Date: 9/7/2016
 # Purpose: Lab 1, Introduction to R, RStudio, and Exercise 1 Practice
+# Date: 9/7/2016
+# Author: Julian Wills
 
 
 # Install Packages and Initialize Functions --------------------------------------------------------
@@ -11,11 +11,18 @@ require(dplyr) || {install.packages("dplyr"); require(dplyr)}
 require(ggplot2) || {install.packages("ggplot2"); require(ggplot2)}
 require(tidyr) || {install.packages("tidyr"); require(tidyr)}
 
-# From: http://stackoverflow.com/questions/2547402/is-there-a-built-in-function-for-finding-the-mode
-mode <- function(x) {
-  ux <- unique(x)
-  ux[which.max(tabulate(match(x, ux)))]
-}
+#  We call this function 'mode2' because 'mode' already refers to a function in R. 
+mode2 = function(x){
+  
+  output = as.numeric(names(table(x)[table(x) == max(table(x))]))
+  
+  if (length(output) < length(x)) {
+    return(output)
+  } else {
+    stop("No mode or all modes. All values occur equally often.")
+  }
+  # Author: Ethan Ludwin-Peery
+} 
 
 
 # Introduction to R -------------------------------------
@@ -28,7 +35,7 @@ mode <- function(x) {
 ?sample
 ?mean 
 ?cat
-
+cat("Hello")
 
 # Calculator --------------------------------------------------------------
 
@@ -44,40 +51,45 @@ mode <- function(x) {
 c(1, 2, 3, 4, 5)   # manual approach
 c(1:5)  # shortcut using sequence operator ':'
 
+
 # Now let's generate a random sample of numbers from a uniform distribution
 set.seed(09072016)  # This resets the random number generator for reproducibility
 sample(10:50,10,TRUE)  # prints to console, but doesn't save it
-sample1 <- sample(10:50,10,TRUE)  # assign the output to a new variable
+sample1 <- sample(10:50,10,TRUE)  # assign the output to a new variable 'sample1'.
+# We want to avoid assigning this variable to 'sample' because that would (temporarily) overwrite the sample() function
 
 
 # Descriptive Statistics --------------------------------------------------
 
-# Mean
-mean1a <- mean(sample1)  # You can always check your work by using the built in function
-mean1b <- (16 + 16 + 20 + 20 + 33 + 25 + 41 + 15 + 23 + 43) / 10  # But always show your work by hand
-all.equal(mean1a, mean1b)  # This compares these two vectors and says 'TRUE' if they are equivalent
+# Now we are going to compute some descriptives statistics of this sample using
+#  both (a) functions in R and (b) manually by showing our work. For HW1 you will be evaluated based on your 
+#  manual calculations, though you can always use R's functions to check your work. Going forward, we will
+#  refer to computations done w/ R functions using the '_a' suffix and manual computations using the '_b' suffix.
+#  For example, 'mean_a' uses the built in function mean() whereas 'mean_b' was computed manually. 
 
-cat("\n Mean of sample1 is: ", mean1b)  # This prints out to console. The '\n' means insert 'new line'
+# Mean
+mean_a <- mean(sample1)  # You can always check your work by using the built in function
+mean_b <- (16 + 16 + 20 + 20 + 33 + 25 + 41 + 15 + 23 + 43) / 10  # But always show your work by hand
+all.equal(mean_a, mean_b)  # This compares these two vectors and says 'TRUE' if they are equivalent
+
+cat("\n Mean of sample1 is: ", mean_b)  # This prints out to console. The '\n' means insert 'new line'
 
 # Median
-median1a <- median(sample1)
+median_a <- median(sample1)
 sort(sample1)  #helpful function
-median1b <- (20 + 23) / 2  # 15 16 16 20 [20 23] 25 33 41 43
-all.equal(median1a, median1b)
-cat("\n Median of sample1 is: ", mean1b)
+median_b <- (20 + 23) / 2  # 15 16 16 20 [20 23] 25 33 41 43
+all.equal(median_a, median_b)
+cat("\n Median of sample1 is: ", mean_b)
 
 # Mode
-mode1a <- mode(sample1)  
-mode1b <- 16  # 15 [16 16] [20 20] 23 25 33 41 43
-all.equal(mode1a, mode1b)
-cat("\n Mode of sample1 is: ", mode1b)
-
-#BONUS: 
-#mode <- mode(sample1)   <==== Why would we NOT want to run this code?
+mode_a <- mode2(sample1) 
+mode_b <- c(16, 20)  # 15 [16 16] [20 20] 23 25 33 41 43
+all.equal(mode_a, mode_b)
+cat("\n Mode(s) of sample1 is: ", mode_b)
 
 # Sample Variance
-sampleVar1a <- var(sample1)
-sampleVar1b <-
+sampleVar_a <- var(sample1)
+sampleVar_b <-
   ( 
     (16 - 25.2) ^ 2 + 
       (16 - 25.2) ^ 2 + 
@@ -90,12 +102,12 @@ sampleVar1b <-
       (23 - 25.2) ^ 2 + 
       (43 - 25.2) ^ 2
     ) / (10 - 1)
-all.equal(sampleVar1a, sampleVar1b)
-cat("\n Sample variance of sample1 is: ", sampleVar1b)
+all.equal(sampleVar_a, sampleVar_b)
+cat("\n Sample variance of sample1 is: ", sampleVar_b)
 
 # Population Variance
-popVar1a <- var(sample1) * (length(sample1) - 1) / length(sample1) # lot of code...
-popVar1b <-
+popVar_a <- var(sample1) * (length(sample1) - 1) / length(sample1) # lot of code...
+popVar_b <-
   ( 
     (16 - 25.2) ^ 2 + 
       (16 - 25.2) ^ 2 + 
@@ -108,8 +120,8 @@ popVar1b <-
       (23 - 25.2) ^ 2 + 
       (43 - 25.2) ^ 2
   ) / 10
-all.equal(popVar1a, popVar1b)
-cat("\n Population variance of sample1 is: ", popVar1b)
+all.equal(popVar_a, popVar_b)
+cat("\n Population variance of sample1 is: ", popVar_b)
 
 # Stem and leaf -----------------------------------------------------------
 stem(sample1) #This is one way to check your work.
