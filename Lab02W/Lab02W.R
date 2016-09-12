@@ -3,7 +3,6 @@
 # Instructor: Julian Wills
 # Author: JAW 9.9.16
 
-
 # Install Packages and Initialize Functions --------------------------------------------------------
 
 # Let's first install ggplot2 for better plots. This should take ~15 seconds. 
@@ -27,12 +26,13 @@ mode2 = function(x){
   # Author: Ethan Ludwin-Peery
   output = as.numeric(names(table(x)[table(x) == max(table(x))]))
   
-  if (length(output) < length(x)) {
+  if (length(output) < length(table(x))) {
     return(output)
   } else {
     stop("No mode or all modes. All values occur equally often.")
   }
-} 
+  
+}
 
 # This function automatically creates bins for ggplot histograms so that it can emulate the base::hist() function. 
 #  ^ By the way, the notation base::hist refers to the hist() function from the base package. This is a common 
@@ -132,10 +132,15 @@ ggplot(CESD_data, aes(x = CESD)) +
 ggplot(CESD_data, aes(x = CESD)) + 
   geom_histogram(bins=10)
 
+# This looks a bit better, but notice the boundaries of the bins are hard to identify. We can manually
+#  create 10 bins of size 5 within the interval [5,50]. 
+ggplot(CESD_data, aes(x = CESD)) + 
+  geom_histogram(breaks = seq(5,50,5))
+
 # Now we're going to try using that 'brx()' function we initialized in the beginning of the script. Don't worry about 
 #  how it works for now. Just know that it is designed to emulate the output of the base R hist() function. 
-#  In addition, it takes a vector as an argument. In this case we can just supply 'CESD' since ggplot is smart enough
-#  to infer that we really mean CESD_data$CESD. This is because we specified the 'CESD_data' dataframe in the beginning. 
+#  In addition, it takes a vector as an argument. In this case we supply 'CESD_data$CESD' to refer to the 'CESD' column
+#  (or variable) within the 'CESD_data' dataframe. 
 ggplot(CESD_data, aes(x = CESD)) + 
   geom_histogram(breaks=brx(CESD_data$CESD))
 

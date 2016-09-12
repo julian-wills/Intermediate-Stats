@@ -14,15 +14,16 @@ require(tidyr) || {install.packages("tidyr"); require(tidyr)}
 #  We call this function 'mode2' because 'mode' already refers to a function in R. 
 mode2 = function(x){
   
+  # Author: Ethan Ludwin-Peery
   output = as.numeric(names(table(x)[table(x) == max(table(x))]))
   
-  if (length(output) < length(x)) {
+  if (length(output) < length(table(x))) {
     return(output)
   } else {
     stop("No mode or all modes. All values occur equally often.")
   }
-  # Author: Ethan Ludwin-Peery
-} 
+  
+}
 
 
 # Introduction to R -------------------------------------
@@ -35,7 +36,6 @@ mode2 = function(x){
 ?sample
 ?mean 
 ?cat
-cat("Hello")
 
 # Calculator --------------------------------------------------------------
 
