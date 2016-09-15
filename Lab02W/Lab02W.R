@@ -5,6 +5,11 @@
 
 # Install Packages and Initialize Functions --------------------------------------------------------
 
+# NOTE: If you already have 'dplyr' and 'ggplot2' installed, you only need to run these two lines of codes below.
+#  If this doesn't work on your personal or lab computer, then you will need to run the lines below instead. 
+library(dplyr)
+library(ggplot2)
+
 # Let's first install ggplot2 for better plots. This should take ~15 seconds. 
 require(ggplot2) || {install.packages("ggplot2", repos="http://cran.us.r-project.org"); require(ggplot2)}
 
@@ -72,6 +77,7 @@ getwd()
 #  We're going to use the 'read.csv' function with two arguments: (1) the .csv filename and (2) header = TRUE.
 #  The header argument tells R that the first line refers to the names of the variable (rather than importing it as the first
 #  line of data.)
+
 CESD_data <- read.csv(file = "Ex2_Lab_data.csv", header=TRUE)
 
 # Compute Descriptive Statistics ------------------------------------------
@@ -149,7 +155,7 @@ ggplot(CESD_data, aes(x = CESD)) +
 ggplot(CESD_data, aes(x = CESD)) + 
   geom_histogram(breaks=brx(CESD_data$CESD)) + 
   xlab("CESD Scores") + 
-  ylab("Density") + 
+  ylab("Frequency") + 
   ggtitle("Distribution of 20 CESD Scores") 
 
 ###
@@ -269,7 +275,7 @@ CESD_data_T <- CESD_data %>%
 # Let's start with the base function 'summary' to look at some descriptive statistics of our new variables. 
 summary(CESD_data_T)
 
-# We can use the 'summarize' function to calculate the mean and SD of each of these variables.
+# We can use the 'summarize' function (from dplyr) to calculate the mean and SD of each of these variables.
 summarize(CESD_data_T, 
           CESD_mean = mean(CESD), CESD_SD = sd(CESD),
           CESD_a_mean = mean(CESD_a), CESD_a_SD = sd(CESD_a),
@@ -314,3 +320,33 @@ ggplot(CESD_data_T, aes(x=CESD_c)) +
 #  In the homework, don't worry if your last histogram has fewer bins than you'd expect -- you won't be penalized.  
   
 
+# DEMO: Expected Value demonstration --------------------------------------
+
+# Uncomment the code below to simulate the expected value demonstration from the slides. 
+
+# sample1 <- c(1, 2, 3, 3, 4, 4, 5, 6)
+# 
+# old <- theme_set(theme_light(base_size = 14)) 
+# 
+# dOut <- NULL;
+# 
+# for (i in 1:20000) {
+#   sample1_draw <- sample(sample1, 1)
+#   dTmp <- data.frame(sampleID = i, value = sample1_draw)
+#   dOut <- dOut %>%  bind_rows(dTmp) %>% mutate(cum_mean = cummean(value))
+#   if (i %% 1000 == 0) {cat("\n Loop: ", i)}
+# }
+# 
+# ggplot(dOut, aes(value)) +
+#   geom_histogram(bins=6, color="black", fill="grey") +
+#   geom_vline(aes(xintercept = mean(value)), linetype="dashed", color="blue", size=1.5) +
+#   scale_x_continuous(breaks = seq(1,6,1), ) +
+#   geom_text(aes(label = paste("Mean:", round(mean(value),3)), x= Inf,y=Inf), hjust=+1.5, vjust=+3, color="blue", size=6) + 
+#   xlab("Value") + ylab("Frequency") + ggtitle("Expected Value of Random Draw")
+# 
+# ggplot(dOut) +
+#   geom_line(aes(sampleID, cum_mean)) + 
+#   coord_cartesian(ylim = c(3.25,3.75)) +
+#   xlab("Number of Random Draws")  +
+#   ylab("Average of Sample") + 
+#   ggtitle("Expected Value over 20,000 Random Draws")
