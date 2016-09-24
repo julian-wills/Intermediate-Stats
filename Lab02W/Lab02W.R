@@ -264,11 +264,10 @@ mutate(CESD_data,
 
 # Now that we have a sense of how mutate works, let's save these transformations to a new dataframe object.
 #  Let's use the "_T" suffix to remind ourselves that this new dataframe contains the transformed CESD scores. 
-CESD_data_T <- CESD_data %>% 
-  mutate(CESD_a = CESD + 50,
-         CESD_b = CESD * 10,
-         CESD_c = (CESD - 90) / 2)
-
+CESD_data_T <- mutate(CESD_data, 
+                      CESD_a = CESD + 50,
+                      CESD_b = CESD * 10,
+                      CESD_c = (CESD - 90) / 2) 
 
 # Descriptive Stats of Transformed Data -----------------------------------
 
