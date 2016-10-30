@@ -1,0 +1,179 @@
+---
+title: "R Notebook"
+output: 
+  html_notebook: 
+    theme: readable
+    toc: yes
+---
+
+## Loading Packages & Data
+
+Loading packages
+```{r, results='hide'}
+ipak <- function(pkg){
+  new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
+  if (length(new.pkg)) 
+    install.packages(new.pkg, dependencies = TRUE)
+  sapply(pkg, require, character.only = TRUE)
+}
+
+packages <- c("tidyverse", "ggpmisc", "broom", "gridExtra", "ggExtra")
+ipak(packages)
+```
+
+
+Load in the data for the exercise
+```{r, echo=TRUE}
+ex8_data <- read.csv("/Users/Julian/GDrive/Misc/Classes/InterStats/Ex8_LabData.csv") %>% tbl_df()
+```
+
+<br />
+Add a light theme for ggplot output.
+```{r}
+old <- theme_set(theme_light(base_size = 12))
+```
+
+## Scatterplot
+
+Create a scatterplot with CESD scores at Time 1 and Time 2. 
+```{r Test, echo=TRUE}
+ggplot(ex8_data, aes(CESD1, CESD2)) + 
+  geom_point()
+
+```
+
+<br />
+Add a LOESS line (i.e., a smoothed or running average).
+```{r}
+ggplot(ex8_data, aes(CESD1, CESD2)) + 
+  geom_point() + 
+  geom_smooth()
+
+```
+
+## Correlation
+
+Test the correlation between CESD1 and CESD2. 
+```{r}
+cor.test(ex8_data$CESD1, ex8_data$CESD2)
+
+```
+
+### BONUS: Boostrapped Confidence Interval
+```{r}
+set.seed(10302016)
+nSims <- 1000
+ex8_data %>% 
+  bootstrap(nSims) %>% 
+  do(tidy(cor(.$CESD1, .$CESD2))) %>% 
+  ungroup() %>% select(pearson_r = x) %>% 
+  arrange(pearson_r) %>% 
+  slice( c(nSims*.025, nSims*.975)) %>% 
+  mutate_all(funs(round(.,4))) %>% 
+  add_column(bound = c("lower", "upper"))
+
+```
+
+## Regression
+
+Test the linear regression of CESD time 1 scores predicting CESD at time 2.    
+```{r}
+m1 <- lm(CESD2 ~ CESD1, data=ex8_data)
+summary(m1)
+```
+
+<br />
+Use broom::tidy to output model summary into dataframe 
+```{r}
+tidy(m1)
+glance(m1)
+```
+
+<br />
+General equation for line of best fit:
+$$
+y = a + bx
+$$
+<br />
+Plug in estimates to generate equation for line of best fit
+$$
+\hat{Y} = 2.57 + 0.45x
+$$
+
+<br />
+Examine confidence interval of the estimates
+```{r}
+confint(m1)
+```
+
+<br />
+Add linear regression fit onto scatterplot
+```{r}
+ggplot(ex8_data, aes(CESD1, CESD2)) + 
+  geom_point() + 
+  geom_smooth(method=lm)
+
+```
+
+<br />
+Remember to add title and axes to your plots
+```{r}
+
+ggplot(ex8_data, aes(CESD1, CESD2)) + 
+  geom_point() + 
+  geom_smooth(method=lm) + 
+  xlab("CESD at Time 1") + 
+  ylab("CESD at Time 2") + 
+  ggtitle("CESD at Time 2 as a function of CESD at Time 1")
+
+```
+
+### BONUS: Adding Equation
+We can also add some code to superimpose the regression equation
+```{r}
+
+ggplot(ex8_data, aes(CESD1, CESD2)) + 
+  geom_point() + 
+  geom_smooth(method=lm) +
+  xlab("CESD at Time 1") + 
+  ylab("CESD at Time 2") + 
+  ggtitle("CESD at Time 2 as a function of CESD at Time 1") +
+  stat_poly_eq(aes(label =  paste(..eq.label.., ..adj.rr.label.., sep = "~~~~")),
+               formula = y~x, parse = TRUE, label.x.npc = .5, color="blue")
+```
+
+### BONUS: Marginal Histograms
+We can also add histograms to convey marginal distributions
+
+```{r}
+p1 <- ggplot(ex8_data, aes(CESD1, CESD2)) + 
+  geom_point() + 
+  geom_smooth(method=lm) +
+  xlab("CESD at Time 1") + 
+  ylab("CESD at Time 2") + 
+  stat_poly_eq(aes(label =  paste(..eq.label.., ..adj.rr.label.., sep = "~~~~")),
+               formula = y~x, parse = TRUE, label.x.npc = .5, color="blue") + 
+  
+  # Remove gridlines 
+  theme_bw(base_size = 16) +
+  theme(axis.text.x     = element_text(size = 12),
+        axis.title.y    = element_text(vjust = +1.5),
+        panel.grid.major  = element_blank(),
+        panel.grid.minor  = element_blank(),
+        legend.background = element_blank(),
+        legend.key = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        axis.line  = element_line(colour = "black"))
+
+ggMarginal(
+  p = p1,
+  type = 'histogram',
+  bins = 20,
+  margins = 'both',
+  size = 2,
+  col = 'black',
+  fill="grey"
+)
+```
+
